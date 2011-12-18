@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+    
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>
+            Web Socket Test
+        </title>
+        <style>
+            body{ font-family:Verdana; font-size:14px; margin:100px; background:#f5f5f5;
+            }
+            #writing{ position:fixed; bottom:10px; left:10px; font-size:9px; 
+                      background:lightyellow; padding:5px; border:1px solid #ccc; }
+            #entry{ width:100%; font-size:20px; padding:20px; border:2px solid #ccc; 
+                    -moz-box-sizing: border-box; -webkit-box-sizing:border-box; box-sizing: border-box; }
+            #output{ height:300px; overflow:auto; margin-bottom:10px; }
+        </style>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            function random_color(format) {
+                var rint = Math.round(0xffffff * Math.random());
+                switch (format) {
+                case 'hex':
+                    return ('#0' + rint.toString(16)).replace(/^#0([0-9a-f]{6})$/i, '#$1');
+                    break;
+
+                case 'rgb':
+                    return 'rgb(' + (rint >> 16) + ',' + (rint >> 8 & 255) + ',' + (rint & 255) + ')';
+                    break;
+
+                default:
+                    return rint;
+                    break;
+                }
+            }
+            var name = '';
+            var colors = {};
+            var socket = io.connect('http://basic_chat.serkanyersen.c9.io/');
+            socket.on('message', function(mes) {
+                var e = JSON.parse(mes);
+                if(!(e.user in colors)){
+                    colors[e.user] = random_color('hex');
+                }                
+                if (e.writing === undefined) {
+                    $('#output').append('<div><b style="color:'+colors[e.user]+'">' + e.user + '</b>: ' + e.message + '</div>');
+                } else if (e.writing === true) {
+                    $('#ww-' + e.user.replace(/\W/gim, '_')).remove();
+                    $('#writing').append('<div id="ww-' + e.user.replace(/\W/gim, '_') + '">' + e.user + ' is writing...</div>');
+                } else if (e.writing === false) {
+                    $('#ww-' + e.user.replace(/\W/gim, '_')).remove();
+                } else {
+                    $('#output').append(mes);
+                }
+                $('#output').scrollTop($('#output')[0].scrollHeight)
+            });
+
+            $(function() {
+                name = prompt('Your name please') || 'Anon';
+                socket.send(JSON.stringify({
+                    user: name,
+                    message: 'joined the chat'
+                }));
+                $('#output').append(name + ' joined the chat');
+
+                var w;
+                var entry = $('#entry');
+                entry.keyup(function(e) {
+                    if (e.keyCode == 13) {
+                        socket.send(JSON.stringify({
+                            user: name,
+                            message: entry.val()
+                        }));
+                        $('#output').append('<div><b>You</b>: ' + entry.val() + '</div>');
+                        $('#output').scrollTop($('#output')[0].scrollHeight)
+                        entry.val('');
+                    }
+
+                    socket.send(JSON.stringify({
+                        user: name,
+                        writing: (entry.val().trim() != '')
+                    }));
+                });
+            });
+        </script>
+    </head>
+    
+    <body>
+        <div>
+            <div id="output">
+            </div>
+            <input placeholder="Please write..." type="input" id="entry" />
+            <div id="writing">
+            </div>
+        </div>
+    </body>
+
+</html>
