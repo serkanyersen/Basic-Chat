@@ -110,7 +110,7 @@ var Chat = {
     },
     
     init: function(){
-        this.socket = io.connect('http://basic_chat.serkanyersen.c9.io/');
+        this.socket = io.connect(location.href);
         this.setSocketEvents();
         this.setName();
         this.joined();
