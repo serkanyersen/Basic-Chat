@@ -1,3 +1,4 @@
+/*global io:false */
 var Chat = {
     name: '',
     colors: {},
@@ -28,7 +29,6 @@ var Chat = {
     
     onMessage: function(mes){
         var e = JSON.parse(mes);
-        
         
         if (e.writing === undefined) {
             $('#output').append('<div><b style="color:' + this.getUserColor(e.user) + '">' + e.user + '</b>: <pre>' + this.escapeHTML(e.message) + '</pre></div>');
@@ -103,13 +103,23 @@ var Chat = {
         this.socket.on('updateParticipantList', function(data){
             $('#participants').html('');
             for(var i in data.list){
-                $('#participants').append('<li style="color:'+$this.getUserColor(data.list[i])+'" >'+data.list[i]+'</li>');
+                if(data.list[i]){
+                    $('#participants').append('<li style="color:'+$this.getUserColor(data.list[i])+'" >'+data.list[i]+'</li>');
+                }
             }
         });
         
     },
     
     init: function(){
+        
+        if(location.hostname.match('heroku')){
+            io.configure(function () { 
+              io.set("transports", ["xhr-polling"]); 
+              io.set("polling duration", 10); 
+            });    
+        }
+        
         this.socket = io.connect(location.hostname); 
         this.setSocketEvents();
         this.setName();
