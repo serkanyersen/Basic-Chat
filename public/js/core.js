@@ -19,14 +19,19 @@ var Chat = {
         return username.replace(/\W/gim, '_');
     },
     
+    getUserColor: function(user){
+        if (!(user in this.colors)) {
+            this.colors[user] = this.randomColor('hex');
+        }
+        return this.colors[user];
+    },
+    
     onMessage: function(mes){
         var e = JSON.parse(mes);
-        if (!(e.user in this.colors)) {
-            this.colors[e.user] = this.randomColor('hex');
-        }
+        
         
         if (e.writing === undefined) {
-            $('#output').append('<div><b style="color:' + this.colors[e.user] + '">' + e.user + '</b>: ' + e.message + '</div>');
+            $('#output').append('<div><b style="color:' + this.getUserColor(e.user) + '">' + e.user + '</b>: <pre>' + this.escapeHTML(e.message) + '</pre></div>');
         } else if (e.writing === true) {
             $('#ww-' + this.fixUserName(e.user)).remove();
             $('#writing').append('<div id="ww-' + this.fixUserName(e.user) + '">' + e.user + ' is writing...</div>');
@@ -44,7 +49,7 @@ var Chat = {
     },
     
     setName: function(){
-        this.name = prompt('Your name please', $.cookie('name') || '') || 'Anon';
+        this.name = this.escapeHTML(prompt('Your name please', $.cookie('name') || '') || 'Anon');
         $.cookie('name', this.name);
     },
     
@@ -53,14 +58,17 @@ var Chat = {
         if(str !== ''){
             $('#output').append(str || object.message);
             $('#output').scrollTop($('#output')[0].scrollHeight);
-        }
+        } 
+    },
+    
+    escapeHTML: function(html){
+        return html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     },
     
     joined: function(){
-        this.send({
-            user: this.name,
-            message: 'joined the chat'
-        }, this.name + ' joined the chat');
+        this.socket.emit('join',{
+            name: this.name
+        });
     },
     
     setKeyEvent: function(){
@@ -71,7 +79,7 @@ var Chat = {
                 $this.send({
                     user: $this.name,
                     message: entry.val()
-                }, '<div><b>You</b>: ' + entry.val() + '</div>');
+                }, '<div><b style="color:'+$this.getUserColor($this.name)+'">'+$this.name+'</b>: <pre>' + $this.escapeHTML(entry.val()) + '</pre></div>');
                 entry.val('');
             }
             
@@ -82,11 +90,31 @@ var Chat = {
         });
     },
     
+    participants: function(){
+        var $this = this;
+        this.socket.on('join', function(data){
+            $('#output').append('<div>' + data.name + ' has joined the chat</div>');
+        });
+        
+        this.socket.on('leave', function(data){
+            $('#output').append('<div>' + data.name + ' has left the chat</div>');
+        });
+        
+        this.socket.on('updateParticipantList', function(data){
+            $('#participants').html('');
+            for(var i in data.list){
+                $('#participants').append('<li style="color:'+$this.getUserColor(data.list[i])+'" >'+data.list[i]+'</li>');
+            }
+        });
+        
+    },
+    
     init: function(){
         this.socket = io.connect('http://basic_chat.serkanyersen.c9.io/');
         this.setSocketEvents();
         this.setName();
         this.joined();
+        this.participants();
         this.setKeyEvent();
     }
 };
