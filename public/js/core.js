@@ -113,13 +113,6 @@ var Chat = {
     
     init: function(){
         
-        if(location.hostname.match('heroku')){
-            io.configure(function () { 
-              io.set("transports", ["xhr-polling"]); 
-              io.set("polling duration", 10); 
-            });    
-        }
-        
         this.socket = io.connect(location.hostname); 
         this.setSocketEvents();
         this.setName();

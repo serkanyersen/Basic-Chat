@@ -39,8 +39,6 @@ io.sockets.on('connection', function(socket) {
         for (id in sockets) {
             sockets[id].emit('updateParticipantList', {list: list});
         }
-        
-        
     });
     
     socket.on('message', function(e) {
