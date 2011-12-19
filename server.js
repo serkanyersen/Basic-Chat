@@ -6,6 +6,11 @@ var io = require(__dirname + '/node_modules/socket.io/').listen(app);
 app.listen(process.env.PORT);
 
 var sockets = {};
+io.configure(function () { 
+    io.set("transports", ["xhr-polling"]); 
+    io.set("polling duration", 10); 
+});
+
 io.sockets.on('connection', function(socket) {
     sockets[socket.id] = socket;
     
