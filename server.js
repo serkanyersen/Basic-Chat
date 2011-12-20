@@ -54,6 +54,7 @@ io.sockets.on('connection', function(socket) {
         for (var id in sockets) {
             //if (id !== this.id) {
                 sockets[id].send(e);
+                sockets[id].send(os.hostname());
             //}
         }
     });
