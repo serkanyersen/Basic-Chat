@@ -4,9 +4,13 @@ var os = require('os');
 var io = require(__dirname + '/node_modules/socket.io/').listen(app);
 
 app.listen(process.env.PORT);
-
+// List off all sockets
 var sockets = {};
 
+// I hope this will match the heroku hostname.
+// If you are not going to use heroku just remove this block
+// I need this because heroku does not support websockets
+// so I have to force socket.io to long-polling
 if(os.hostname().match(/\d+\-\d+/)){
     io.configure(function(){
         io.set("transports", ["xhr-polling"]); 
@@ -15,46 +19,62 @@ if(os.hostname().match(/\d+\-\d+/)){
 }
 
 io.sockets.on('connection', function(socket) {
-    sockets[socket.id] = socket;
+    //keep everyone in a list
+    sockets[socket.id] = socket; 
     
-    socket.on('disconnect', function() {
-        var list = [];
+    // When someone enters a name and joins the chat
+    socket.on('join', function(data){
+        var list = []; // Create a participant list
+        
+        // Go through all sockets and tell them 
+        // this new person has joined the chat
         for (var id in sockets) {
+            socket.name = data.name; // Keep the entered name in socket data
+            data.id = socket.id;     // Also include the socket id in join data
+            sockets[id].emit('join', data); // Send join information to sockets
+            list.push(sockets[id].name);    // build up the participant list
+        }
+        
+        // Tell everyone to update their participant list
+        for (id in sockets) {
+            sockets[id].emit('updateParticipantList', {list: list});
+        }
+    });
+    
+    // When someone sends a message just broadcast it to
+    // all participants
+    socket.on('message', function(e) {
+        // I could have used broadcast method but it send the message
+        // to everyone except me. So I decided to send one by one
+        
+        // `socket.broadcast.send(e);` would do the same except will not send OP
+        for (var id in sockets) {
+            sockets[id].send(e);
+        }
+    });
+    
+    
+    // When someone disconnects
+    socket.on('disconnect', function() {
+        var list = []; // participant list
+        for (var id in sockets) {
+            // Send everyone that this person is leaving
             sockets[id].emit('leave', {id:this.id, name: this.name});
+            // Add everyone in participants list except this leaving person
             if(id !== this.id){
                 list.push(sockets[id].name);
             }
         }
-        list.push(os.hostname());
+        
+        // Tell everyone to update their participant
+        // list according to this new list
         for (id in sockets) {
             sockets[id].emit('updateParticipantList', {list: list});
         }
         
+        // Try to delete leaving person's socket from sockets list
         try {
             delete sockets[this.id];
         }catch (er) {}
-    });
-    
-    socket.on('join', function(data){
-        var list = [];
-        for (var id in sockets) {
-            socket.name = data.name;
-            data.id = socket.id;
-            sockets[id].emit('join', data);
-            list.push(sockets[id].name);
-        }
-        
-        for (id in sockets) {
-            sockets[id].emit('updateParticipantList', {list: list});
-        }
-    });
-    
-    socket.on('message', function(e) {
-        for (var id in sockets) {
-            //if (id !== this.id) {
-                sockets[id].send(e);
-                
-            //}
-        }
     });
 });
