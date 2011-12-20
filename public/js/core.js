@@ -7,12 +7,12 @@ var Chat = {
     randomColor: function (format) {
         var rint = Math.round(0xffffff * Math.random());
         switch (format) {
-        case 'hex':
-            return ('#0' + rint.toString(16)).replace(/^#0([0-9a-f]{6})$/i, '#$1');
-        case 'rgb':
-            return 'rgb(' + (rint >> 16) + ',' + (rint >> 8 & 255) + ',' + (rint & 255) + ')';
-        default:
-            return rint;
+            case 'hex':
+                return ('#0' + rint.toString(16)).replace(/^#0([0-9a-f]{6})$/i, '#$1');
+            case 'rgb':
+                return 'rgb(' + (rint >> 16) + ',' + (rint >> 8 & 255) + ',' + (rint & 255) + ')';
+            default:
+                return rint;
         }
     },
     
@@ -34,7 +34,7 @@ var Chat = {
             if($('#output div:last-child').hasClass('user-'+e.user)){
                 $('#output div:last-child').append('<pre>' + this.escapeHTML(e.message) + '</pre>');
             }else{
-                $('#output').append('<div class="user-'+e.user+'"><b style="color:' + this.getUserColor(e.user) + '">' + e.user + '</b>: <pre>' + this.escapeHTML(e.message) + '</pre></div>');
+                $('#output').append('<div class="user-'+e.user+'"><div class="color-box" style="background:'+this.getUserColor(e.user)+'"></div><b>' + e.user + '</b>: <pre>' + this.escapeHTML(e.message) + '</pre></div>');
             }
             $('#output').scrollTop($('#output')[0].scrollHeight);
         } else if (e.writing === true) {
@@ -109,11 +109,11 @@ var Chat = {
     participants: function(){
         var $this = this;
         this.socket.on('join', function(data){
-            $('#output').append('<div>' + data.name + ' has joined the chat</div>');
+            $('#output').append('<div class="info-text">' + data.name + ' has joined the chat</div>');
         });
         
         this.socket.on('leave', function(data){
-            $('#output').append('<div>' + data.name + ' has left the chat</div>');
+            $('#output').append('<div class="info-text">' + data.name + ' has left the chat</div>');
         });
         
         this.socket.on('updateParticipantList', function(data){
@@ -130,7 +130,7 @@ var Chat = {
         var o = $('#output'), c = $('#o-cont');
         var calc = function(){
             o.css('display', 'none');
-            var h = c.height()-parseFloat(c.css('padding-top'))-parseFloat(c.css('padding-bottom'));
+            var h = c.height()+parseFloat(c.css('padding-top'))+parseFloat(c.css('padding-bottom'));
             o.css('display', '');
             o.css('height', h);
         };

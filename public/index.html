@@ -9,22 +9,31 @@
         <link href="css/style.css" rel="stylesheet" />
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <script src="js/jcookie.js"></script>
-        <script src="http://scripts.embed.ly/jquery.embedly.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script src="js/core.js"></script>
     </head>
-    
     <body>
         <table cellspacing="0" cellpadding="10" height="100%" width="100%" class="alltable">
             <tr>
-                <td valign="top" id="o-cont">
+                <td valign="top" id="o-cont" rowspan="2">
                     <div id="output">
                     </div>
                 </td>
-                <td width="100" valign="top" id="right-bar">
+                <td width="150" valign="top" id="right-bar">
                     Who is here?
                     <ul id="participants">
                     </ul>
+                </td>
+            </tr>
+            <tr>
+                <td height="100">
+                    <div class="info">
+                        This is a basic chat application written in <a href="http://nodejs.org">Node.js</a>, 
+                        <a href="http://socket.io/">Socket.IO</a> and <a href="http://expressjs.com/">Express.js</a>
+                        <br>
+                        You can access the <a href="https://github.com/serkanyersen/Basic-Chat">source code on github</a>, 
+                        it's freely available, you can use it however you like.
+                    </div>
                 </td>
             </tr>
             <tr>
