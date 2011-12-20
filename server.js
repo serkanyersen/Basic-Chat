@@ -7,7 +7,7 @@ app.listen(process.env.PORT);
 
 var sockets = {};
 
-if(os.hostname().match('heroku') && false){
+if(os.hostname().match('heroku') || true){
     io.configure(function(){
         io.set("transports", ["xhr-polling"]); 
         io.set("polling duration", 10); 
