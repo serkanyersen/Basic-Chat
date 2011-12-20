@@ -1,17 +1,19 @@
 var express = require(__dirname + '/node_modules/express/');
 var app = express.createServer(express.static(__dirname + '/public'));
-
+var os = require('os');
 var io = require(__dirname + '/node_modules/socket.io/').listen(app);
 
 app.listen(process.env.PORT);
 
 var sockets = {};
 
-/*
-io.configure(function(){
-    io.set("transports", ["xhr-polling"]); 
-    io.set("polling duration", 10); 
-});*/
+if(os.hostname().match('herokuapp.com')){
+    io.configure(function(){
+        io.set("transports", ["xhr-polling"]); 
+        io.set("polling duration", 10); 
+    });
+}
+
 
 io.sockets.on('connection', function(socket) {
     sockets[socket.id] = socket;
