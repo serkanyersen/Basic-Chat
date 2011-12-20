@@ -7,13 +7,12 @@ app.listen(process.env.PORT);
 
 var sockets = {};
 
-if(os.hostname().match('herokuapp.com')){
+if(os.hostname().match('heroku')){
     io.configure(function(){
         io.set("transports", ["xhr-polling"]); 
         io.set("polling duration", 10); 
     });
 }
-
 
 io.sockets.on('connection', function(socket) {
     sockets[socket.id] = socket;
@@ -44,7 +43,7 @@ io.sockets.on('connection', function(socket) {
             sockets[id].emit('join', data);
             list.push(sockets[id].name);
         }
-        
+        list.push(os.hostname());
         for (id in sockets) {
             sockets[id].emit('updateParticipantList', {list: list});
         }
@@ -54,7 +53,7 @@ io.sockets.on('connection', function(socket) {
         for (var id in sockets) {
             //if (id !== this.id) {
                 sockets[id].send(e);
-                sockets[id].send(os.hostname());
+                
             //}
         }
     });
