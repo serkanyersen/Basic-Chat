@@ -15,16 +15,32 @@
     </head>
     
     <body>
-        <div>
-            <div id="output">
-            </div>
-            <textarea placeholder="Please write..." id="entry"></textarea>
-            <div id="writing">
-            </div>
-            <ul id="participants">
-                
-            </ul>
-        </div>
+        <table cellspacing="0" cellpadding="10" height="100%" width="100%" class="alltable">
+            <tr>
+                <td valign="top" id="o-cont">
+                    <div id="output">
+                    </div>
+                </td>
+                <td width="100" valign="top" id="right-bar">
+                    Who is here?
+                    <ul id="participants">
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" height="100" id="entry-cont">
+                    <div style="position:relative">
+                        <div id="name-cont">
+                            Choose a name to join chat.
+                            <input type="text" id="name" />
+                            <input type="button" id="set-name" value="Save Name" />
+                        </div>
+                        <textarea placeholder="Please write..." disabled="true" id="entry"></textarea>
+                    </div>
+                    <div id="writing"></div>
+                </td>
+            </tr>
+        </table>
     </body>
 
 </html>

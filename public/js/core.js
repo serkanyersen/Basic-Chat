@@ -31,17 +31,22 @@ var Chat = {
         var e = JSON.parse(mes);
         
         if (e.writing === undefined) {
-            $('#output').append('<div><b style="color:' + this.getUserColor(e.user) + '">' + e.user + '</b>: <pre>' + this.escapeHTML(e.message) + '</pre></div>');
+            if($('#output div:last-child').hasClass('user-'+e.user)){
+                $('#output div:last-child').append('<pre>' + this.escapeHTML(e.message) + '</pre>');
+            }else{
+                $('#output').append('<div class="user-'+e.user+'"><b style="color:' + this.getUserColor(e.user) + '">' + e.user + '</b>: <pre>' + this.escapeHTML(e.message) + '</pre></div>');
+            }
+            $('#output').scrollTop($('#output')[0].scrollHeight);
         } else if (e.writing === true) {
+            if(e.user === this.name){ return; /* don't print my status */ }
             $('#ww-' + this.fixUserName(e.user)).remove();
             $('#writing').append('<div id="ww-' + this.fixUserName(e.user) + '">' + e.user + ' is writing...</div>');
         } else if (e.writing === false) {
             $('#ww-' + this.fixUserName(e.user)).remove();
         } else {
             $('#output').append(mes);
+            $('#output').scrollTop($('#output')[0].scrollHeight);
         }
-        
-        $('#output').scrollTop($('#output')[0].scrollHeight);
     },
     
     setSocketEvents: function(){
@@ -49,8 +54,15 @@ var Chat = {
     },
     
     setName: function(){
-        this.name = this.escapeHTML(prompt('Your name please', $.cookie('name') || '') || 'Anon');
-        $.cookie('name', this.name);
+        $('#name').val($.cookie('name') || '');
+        var $this = this;
+        $('#set-name').click(function(){
+            $this.name = $this.escapeHTML($('#name').val());
+            $('#entry').attr('disabled', false);
+            $.cookie('name', $this.name);
+            $this.joined();
+            $('#name-cont').remove();
+        });
     },
     
     send: function(object, str){
@@ -74,19 +86,23 @@ var Chat = {
     setKeyEvent: function(){
         var entry = $('#entry');
         var $this = this;
+        var time = 0;
         entry.keyup(function(e) {
             if (e.keyCode == 13) {
                 $this.send({
                     user: $this.name,
                     message: entry.val()
-                }, '<div><b style="color:'+$this.getUserColor($this.name)+'">'+$this.name+'</b>: <pre>' + $this.escapeHTML(entry.val()) + '</pre></div>');
+                }, '');
                 entry.val('');
             }
             
-            $this.send({
-                user: $this.name,
-                writing: (entry.val().trim() !== '')
-            }, '');
+            clearTimeout(time);
+            time = setTimeout(function(){
+                $this.send({
+                    user: $this.name,
+                    writing: (entry.val().trim() !== '')
+                }, '');    
+            }, 200);
         });
     },
     
@@ -110,15 +126,32 @@ var Chat = {
         });
         
     },
+    setOutputHeight: function(){
+        var o = $('#output'), c = $('#o-cont');
+        var calc = function(){
+            o.css('display', 'none');
+            var h = c.height()-parseFloat(c.css('padding-top'))-parseFloat(c.css('padding-bottom'));
+            o.css('display', '');
+            o.css('height', h);
+        };
+        
+        calc();
+        var t;
+        $(window).resize(function(){
+            calc();
+            clearTimeout(t);
+            t = setTimeout(function(){ calc(); }, 100); // Resize may happen really fast
+        });
+    },
     
     init: function(){
         
         this.socket = io.connect(location.hostname); 
         this.setSocketEvents();
         this.setName();
-        this.joined();
         this.participants();
         this.setKeyEvent();
+        this.setOutputHeight();
     }
 };
 

@@ -6,11 +6,12 @@ var io = require(__dirname + '/node_modules/socket.io/').listen(app);
 app.listen(process.env.PORT);
 
 var sockets = {};
-io.configure(function () { 
+/*
+io.configure(function(){
     io.set("transports", ["xhr-polling"]); 
     io.set("polling duration", 10); 
 });
-
+*/
 io.sockets.on('connection', function(socket) {
     sockets[socket.id] = socket;
     
@@ -48,9 +49,9 @@ io.sockets.on('connection', function(socket) {
     
     socket.on('message', function(e) {
         for (var id in sockets) {
-            if (id !== this.id) {
+            //if (id !== this.id) {
                 sockets[id].send(e);
-            }
+            //}
         }
     });
 });
