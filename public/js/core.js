@@ -126,6 +126,7 @@ var Chat = {
         });
         
     },
+
     setOutputHeight: function(){
         var o = $('#output'), c = $('#o-cont');
         var calc = function(){

@@ -16,8 +16,7 @@
         <table cellspacing="0" cellpadding="10" height="100%" width="100%" class="alltable">
             <tr>
                 <td valign="top" id="o-cont" rowspan="2">
-                    <div id="output">
-                    </div>
+                    <div id="output"></div>
                 </td>
                 <td width="150" valign="top" id="right-bar">
                     Who is here?
@@ -26,7 +25,7 @@
                 </td>
             </tr>
             <tr>
-                <td height="100">
+                <td height="100" id="info-cont">
                     <div class="info">
                         This is a basic chat application written in <a href="http://nodejs.org">Node.js</a>, 
                         <a href="http://socket.io/">Socket.IO</a> and <a href="http://expressjs.com/">Express.js</a>
@@ -41,8 +40,7 @@
                     <div style="position:relative">
                         <div id="name-cont">
                             Choose a name to join chat.
-                            <input type="text" id="name" />
-                            <input type="button" id="set-name" value="Save Name" />
+                            <input type="text" id="name" /><input type="button" id="set-name" value="Save Name" />
                         </div>
                         <textarea placeholder="Please write..." disabled="true" id="entry"></textarea>
                     </div>

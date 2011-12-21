@@ -3,7 +3,7 @@ var app = express.createServer(express.static(__dirname + '/public'));
 var os = require('os');
 var io = require(__dirname + '/node_modules/socket.io/').listen(app);
 
-app.listen(process.env.PORT);
+app.listen(process.env.PORT || 1337);
 // List off all sockets
 var sockets = {};
 
