@@ -57,6 +57,7 @@ io.sockets.on('connection', function(socket) {
     // When someone disconnects
     socket.on('disconnect', function() {
         var list = []; // participant list
+        if(!this.name){ return false; } // This socket has never joined the chat so it cannot leave yet.
         for (var id in sockets) {
             // Send everyone that this person is leaving
             sockets[id].emit('leave', {id:this.id, name: this.name});
