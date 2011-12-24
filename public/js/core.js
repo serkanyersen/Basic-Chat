@@ -35,13 +35,13 @@ var Chat = {
             if($('#output div:last-child').hasClass('user-'+e.user)){
                 $('#output div:last-child').append('<pre>' + this.escapeHTML(e.message) + '</pre>');
             }else{
-                $('#output').append('<div class="user-'+e.user+'"><div class="color-box" style="background:'+this.getUserColor(e.user)+'"></div><b>' + e.user + '</b>: <pre>' + this.escapeHTML(e.message) + '</pre></div>');
+                $('#output').append('<div><div class="color-box" style="background:'+this.getUserColor(e.user)+'"></div><b>' + this.escapeHTML(e.user) + '</b>: <pre>' + this.escapeHTML(e.message) + '</pre></div>');
             }
             $('#output').scrollTop($('#output')[0].scrollHeight);
         } else if (e.writing === true) {
             if(e.user === this.name){ return; /* don't print my status */ }
             $('#ww-' + this.fixUserName(e.user)).remove();
-            $('#writing').append('<div id="ww-' + this.fixUserName(e.user) + '">' + e.user + ' is writing...</div>');
+            $('#writing').append('<div id="ww-' + this.fixUserName(e.user) + '">' + this.escapeHTML(e.user) + ' is writing...</div>');
         } else if (e.writing === false) {
             $('#ww-' + this.fixUserName(e.user)).remove();
         } else {
@@ -123,7 +123,7 @@ var Chat = {
     onServerMessage: function(){
         var $this = this;
         this.socket.on('serverMessage', function(data){
-            $('#output').append('<div class="info-text" style="color:gold">' + data.message + '</div>');
+            $('#output').append('<div class="info-text" style="color:gold">' + $this.escapeHTML(data.message) + '</div>');
             $('#entry').val($this.lastMessage);
         });
     },
