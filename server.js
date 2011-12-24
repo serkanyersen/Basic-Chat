@@ -31,7 +31,7 @@ io.sockets.on('connection', function(socket) {
             socket.name = data.name; // Keep the entered name in socket data
             data.id = socket.id;     // Also include the socket id in join data
             sockets[id].emit('join', data); // Send join information to sockets
-            list.push(sockets[id].name.replace(/</gim, '&lt;'));    // build up the participant list
+            list.push(sockets[id].name);    // build up the participant list
         }
         
         // Tell everyone to update their participant list

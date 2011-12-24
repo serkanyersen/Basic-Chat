@@ -64,7 +64,6 @@ var Chat = {
             var p = $('#participants li');
             
             for(var i=0; i < p.length; i++){
-                console.log(p[i], p[i].innerHTML);
                 if(p[i].innerHTML == name){
                     return alert('This name is already used. Please choose another one.');
                 }
@@ -132,13 +131,13 @@ var Chat = {
         var $this = this;
         this.socket.on('join', function(data){
             if(data.name){
-                $('#output').append('<div class="info-text">' + data.name.replace(/</gim, '&lt;') + ' has joined the chat</div>');
+                $('#output').append('<div class="info-text">' + $this.escapeHTML(data.name) + ' has joined the chat</div>');
             }
         });
         
         this.socket.on('leave', function(data){
             if(data.name){
-                $('#output').append('<div class="info-text">' + data.name.replace(/</gim, '&lt;') + ' has left the chat</div>');
+                $('#output').append('<div class="info-text">' + $this.escapeHTML(data.name) + ' has left the chat</div>');
             }
         });
         
