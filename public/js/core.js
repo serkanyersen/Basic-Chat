@@ -30,6 +30,8 @@ var Chat = {
     onMessage: function(mes){
         var e = JSON.parse(mes);
         
+        e.user = this.escapeHTML(e.user);
+        
         if (e.writing === undefined) {
             if($('#output div:last-child').hasClass('user-'+e.user)){
                 $('#output div:last-child').append('<pre>' + this.escapeHTML(e.message) + '</pre>');
@@ -131,13 +133,13 @@ var Chat = {
         var $this = this;
         this.socket.on('join', function(data){
             if(data.name){
-                $('#output').append('<div class="info-text">' + data.name + ' has joined the chat</div>');
+                $('#output').append('<div class="info-text">' + this.escapeHTML(data.name) + ' has joined the chat</div>');
             }
         });
         
         this.socket.on('leave', function(data){
             if(data.name){
-                $('#output').append('<div class="info-text">' + data.name + ' has left the chat</div>');
+                $('#output').append('<div class="info-text">' + this.escapeHTML(data.name) + ' has left the chat</div>');
             }
         });
         
@@ -145,7 +147,7 @@ var Chat = {
             $('#participants').html('');
             for(var i in data.list){
                 if(data.list[i]){
-                    $('#participants').append('<li style="color:'+$this.getUserColor(data.list[i])+'" >'+data.list[i]+'</li>');
+                    $('#participants').append('<li style="color:'+$this.getUserColor(data.list[i])+'" >'+this.escapeHTML(data.list[i])+'</li>');
                 }
             }
         });
