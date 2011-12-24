@@ -3,7 +3,7 @@ var Chat = {
     name: '',
     colors: {},
     socket: undefined,
-    
+    lastMessage: '',
     randomColor: function (format) {
         var rint = Math.round(0xffffff * Math.random());
         switch (format) {
@@ -93,6 +93,7 @@ var Chat = {
                     user: $this.name,
                     message: entry.val()
                 }, '');
+                $this.lastMessage = entry.val();
                 entry.val('');
             }
             
@@ -105,7 +106,13 @@ var Chat = {
             }, 200);
         });
     },
-    
+    onServerMessage: function(){
+        var $this = this;
+        this.socket.on('serverMessage', function(data){
+            $('#output').append('<div class="info-text" style="color:gold">' + data.message + '</div>');
+            $('#entry').val($this.lastMessage);
+        });
+    },
     participants: function(){
         var $this = this;
         this.socket.on('join', function(data){
@@ -153,6 +160,7 @@ var Chat = {
         this.participants();
         this.setKeyEvent();
         this.setOutputHeight();
+        this.onServerMessage();
     }
 };
 

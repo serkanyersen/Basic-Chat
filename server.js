@@ -44,11 +44,14 @@ io.sockets.on('connection', function(socket) {
     // When someone sends a message just broadcast it to
     // all participants
     socket.on('message', function(e) {
-        // I could have used broadcast method but it send the message
+        // I could have used broadcast method but it sends the message
         // to everyone except me. So I decided to send one by one
         
         // `socket.broadcast.send(e);` would do the same except will not send OP
         for (var id in sockets) {
+            if(e.length > 250){ // Some people may send messages too large. it may disturb others
+                return this.emit('serverMessage', {message: 'You have exceeded the character length.'});
+            }
             sockets[id].send(e);
         }
     });
