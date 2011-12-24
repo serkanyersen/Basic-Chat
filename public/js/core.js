@@ -1,4 +1,5 @@
 /*global io:false */
+(function(){
 var Chat = {
     name: '',
     colors: {},
@@ -131,13 +132,13 @@ var Chat = {
         var $this = this;
         this.socket.on('join', function(data){
             if(data.name){
-                $('#output').append('<div class="info-text">' + data.name + ' has joined the chat</div>');
+                $('#output').append('<div class="info-text">' + data.name.replace(/</gim, '&lt;') + ' has joined the chat</div>');
             }
         });
         
         this.socket.on('leave', function(data){
             if(data.name){
-                $('#output').append('<div class="info-text">' + data.name + ' has left the chat</div>');
+                $('#output').append('<div class="info-text">' + data.name.replace(/</gim, '&lt;') + ' has left the chat</div>');
             }
         });
         
@@ -184,3 +185,4 @@ var Chat = {
 $(function() {
     Chat.init();
 });
+})();
