@@ -22,8 +22,7 @@ io.sockets.on('connection', function(socket) {
     //keep everyone in a list
     sockets[socket.id] = socket; 
     
-    // When someone enters a name and joins the chat
-    socket.on('join', function(data){
+    var onJoin = function(data){
         var list = []; // Create a participant list
         
         // Go through all sockets and tell them 
@@ -39,7 +38,14 @@ io.sockets.on('connection', function(socket) {
         for (id in sockets) {
             sockets[id].emit('updateParticipantList', {list: list});
         }
-    });
+    };
+    
+    // When someone enters a name and joins the chat
+    socket.on('join', onJoin);
+    
+    // Call this whenever someone connects, so they 
+    // can see the participant list before joining the chat.
+    onJoin({name:''}); 
     
     // When someone sends a message just broadcast it to
     // all participants

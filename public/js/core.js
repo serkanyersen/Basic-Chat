@@ -57,7 +57,19 @@ var Chat = {
         $('#name').val($.cookie('name') || '');
         var $this = this;
         $('#set-name').click(function(){
-            $this.name = $this.escapeHTML($('#name').val());
+            var name = $('#name').val().trim();
+            if(name.length < 2){ return alert('Please enter a valid name'); }
+            if(name.length > 20){ return alert('Name is too long'); }
+            var p = $('#participants li');
+            
+            for(var i=0; i < p.length; i++){
+                console.log(p[i], p[i].innerHTML);
+                if(p[i].innerHTML == name){
+                    return alert('This name is already used. Please choose another one.');
+                }
+            }
+            
+            $this.name = $this.escapeHTML(name);
             $('#entry').attr('disabled', false);
             $.cookie('name', $this.name);
             $this.joined();
@@ -106,6 +118,7 @@ var Chat = {
             }, 200);
         });
     },
+    
     onServerMessage: function(){
         var $this = this;
         this.socket.on('serverMessage', function(data){
@@ -113,14 +126,19 @@ var Chat = {
             $('#entry').val($this.lastMessage);
         });
     },
+    
     participants: function(){
         var $this = this;
         this.socket.on('join', function(data){
-            $('#output').append('<div class="info-text">' + data.name + ' has joined the chat</div>');
+            if(data.name){
+                $('#output').append('<div class="info-text">' + data.name + ' has joined the chat</div>');
+            }
         });
         
         this.socket.on('leave', function(data){
-            $('#output').append('<div class="info-text">' + data.name + ' has left the chat</div>');
+            if(data.name){
+                $('#output').append('<div class="info-text">' + data.name + ' has left the chat</div>');
+            }
         });
         
         this.socket.on('updateParticipantList', function(data){
@@ -153,7 +171,6 @@ var Chat = {
     },
     
     init: function(){
-        
         this.socket = io.connect(location.hostname); 
         this.setSocketEvents();
         this.setName();
