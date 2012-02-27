@@ -8,3 +8,5 @@ Requirements:
 This project is only created to learn node.js and its libraries
 
 You are free to use it however you like.
+
+[![endorse](http://api.coderwall.com/serkanyersen/endorsecount.png)](http://coderwall.com/serkanyersen) 
