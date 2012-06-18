@@ -11,12 +11,15 @@ var sockets = {};
 // If you are not going to use heroku just remove this block
 // I need this because heroku does not support websockets
 // so I have to force socket.io to long-polling
+/*
 if(os.hostname().match(/\d+\-\d+/)){
     io.configure(function(){
         io.set("transports", ["xhr-polling"]); 
         io.set("polling duration", 10); 
     });
 }
+*/
+
 
 io.sockets.on('connection', function(socket) {
     //keep everyone in a list
